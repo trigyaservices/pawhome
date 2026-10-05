@@ -1,0 +1,104 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() && (
+        request.auth.token.role == 'admin' ||
+        (exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin')
+      );
+    }
+
+    // 1. Users collection
+    match /users/{userId} {
+      allow read: if isOwner(userId) || isAdmin();
+      allow create: if isOwner(userId) && (
+        !('role' in request.resource.data) ||
+        request.resource.data.role == 'user' ||
+        isAdmin()
+      );
+      allow update: if isOwner(userId) && (
+        !request.resource.data.diff(resource.data).affectedKeys().hasAny(['role']) ||
+        isAdmin()
+      );
+      allow delete: if isAdmin();
+    }
+
+    // 2. Pets collection
+    match /pets/{petId} {
+      // Detailed view of any pet is public; list view restricted from showing adopted pets unless admin
+      allow get: if true;
+      allow list: if resource.data.status != 'Adopted' || isAdmin();
+      allow create, delete: if isAdmin();
+      // Allow admin update, or reservation lock during application creation
+      allow update: if isAdmin() || (
+        isAuthenticated() &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'activeApplicationId', 'updatedAt']) &&
+        resource.data.status == 'Available' &&
+        request.resource.data.status == 'Reserved'
+      );
+    }
+
+    // 3. Wishlists collection
+    match /wishlists/{userId}/pets/{petId} {
+      allow read, write: if isOwner(userId) || isAdmin();
+    }
+
+    // 4. Applications collection
+    match /applications/{appId} {
+      allow read: if isAuthenticated() && (resource.data.userId == request.auth.uid || isAdmin());
+      allow create: if isAuthenticated() &&
+                    request.resource.data.userId == request.auth.uid &&
+                    request.resource.data.status == 'pending';
+      allow update: if isAdmin() || (
+        isAuthenticated() &&
+        resource.data.userId == request.auth.uid &&
+        !request.resource.data.diff(resource.data).affectedKeys().hasAny(['status', 'decisionReason', 'certificateId', 'decidedAt', 'decidedBy'])
+      );
+      allow delete: if isAdmin();
+    }
+
+    // 5. Adoptions collection
+    match /adoptions/{adoptionId} {
+      allow read: if isAuthenticated() && (resource.data.userId == request.auth.uid || isAdmin());
+      allow write: if isAdmin();
+    }
+
+    // 6. Reports collection (Monthly welfare updates)
+    match /reports/{reportId} {
+      allow read: if isAuthenticated() && (resource.data.userId == request.auth.uid || isAdmin());
+      allow create: if isAdmin();
+      allow update: if isAdmin() || (
+        isAuthenticated() &&
+        resource.data.userId == request.auth.uid &&
+        resource.data.status == 'waiting' &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'text', 'photoUrl', 'submittedAt']) &&
+        request.resource.data.status == 'received'
+      );
+      allow delete: if isAdmin();
+    }
+
+    // 7. User Notifications
+    match /notifications/{userId}/items/{notifId} {
+      allow read: if isOwner(userId) || isAdmin();
+      allow update: if isOwner(userId) && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['read']);
+      allow create, delete: if isAdmin();
+    }
+
+    // 8. Platform Settings
+    match /settings/{docId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+  }
+}

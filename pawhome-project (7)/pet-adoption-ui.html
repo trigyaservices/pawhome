@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pawhome – Pet Adoption</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700;800&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#14312D; --forest:#0F4C45; --mint:#EEF5F1; --paper:#FFFFFF;
+  --marigold:#F2A900; --coral:#E4572E; --line:#D3E1DA; --muted:#566C66;
+  --ok:#1E7B4F; --r-card:20px; --r-in:12px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',system-ui,sans-serif;background:var(--mint);color:var(--ink);line-height:1.5;font-size:16px}
+h1,h2,h3{font-family:'Bricolage Grotesque','DM Sans',system-ui,sans-serif;line-height:1.1;letter-spacing:-.02em}
+button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
+:focus-visible{outline:3px solid var(--marigold);outline-offset:2px}
+.wrap{max-width:1120px;margin:0 auto;padding:0 20px}
+
+/* role preview bar */
+.preview{background:var(--ink);color:#cfe3dc;font-size:13px}
+.preview .wrap{display:flex;gap:12px;align-items:center;justify-content:space-between;padding-top:8px;padding-bottom:8px;flex-wrap:wrap}
+.seg{display:flex;background:#0c211e;border-radius:999px;padding:3px}
+.seg button{padding:5px 14px;border-radius:999px;font-size:13px;color:#cfe3dc}
+.seg button[aria-pressed=true]{background:var(--marigold);color:var(--ink);font-weight:700}
+
+/* header */
+header.top{background:var(--paper);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}
+header.top .wrap{display:flex;align-items:center;gap:20px;height:64px}
+.logo{font-family:'Bricolage Grotesque';font-weight:800;font-size:22px;color:var(--forest);display:flex;align-items:center;gap:8px}
+.logo i{width:30px;height:30px;border-radius:50% 50% 50% 8px;background:var(--marigold);display:grid;place-items:center;font-style:normal;font-size:16px}
+nav{display:flex;gap:8px;margin-left:auto;align-items:center;flex-wrap:wrap}
+nav button{padding:8px 14px;border-radius:999px;font-weight:500;color:var(--muted)}
+nav button[aria-current=page]{background:var(--mint);color:var(--forest);font-weight:700}
+.btn{padding:11px 20px;border-radius:999px;font-weight:700;background:var(--forest);color:#fff;display:inline-flex;align-items:center;justify-content:center}
+.btn:hover{background:#0b3a35}
+.btn.alt{background:var(--marigold);color:var(--ink)}
+.btn.ghost{background:transparent;border:2px solid var(--line);color:var(--ink)}
+.btn.sm{padding:7px 14px;font-size:14px}
+.btn.bad{background:#fff;border:2px solid var(--coral);color:var(--coral)}
+.btn.good{background:var(--ok);color:#fff}
+
+/* hero */
+.hero{background:var(--forest);color:#fff;overflow:hidden}
+.hero .wrap{display:grid;grid-template-columns:1.1fr .9fr;gap:30px;align-items:center;padding-top:56px;padding-bottom:64px}
+.hero h1{font-size:clamp(36px,5.5vw,62px);font-weight:800}
+.hero p{margin:18px 0 26px;max-width:46ch;color:#cfe3dc;font-size:18px}
+.hero .cta{display:flex;gap:12px;flex-wrap:wrap}
+.hero .btn.ghost{border-color:#3d7a71;color:#fff}
+.tags{position:relative;height:320px}
+.tag{position:absolute;width:190px;background:var(--paper);color:var(--ink);border-radius:18px;padding:14px;transform-origin:50% -20px;box-shadow:0 14px 30px rgba(0,0,0,.25)}
+.tag::before{content:"";position:absolute;top:-20px;left:50%;width:2px;height:20px;background:#9bc3ba}
+.tag::after{content:"";position:absolute;top:10px;left:50%;margin-left:-6px;width:12px;height:12px;border-radius:50%;background:var(--mint);border:2px solid #9bc3ba}
+.tag .face{height:110px;border-radius:12px;display:grid;place-items:center;font-size:58px;margin-top:10px}
+.tag b{display:block;margin-top:10px;font-family:'Bricolage Grotesque';font-size:20px}
+.tag span{font-size:13px;color:var(--muted)}
+.tag:nth-child(1){left:0;top:20px;--a:-7deg}
+.tag:nth-child(2){left:150px;top:0;--a:4deg;z-index:2}
+.tag:nth-child(3){left:290px;top:40px;--a:-3deg}
+.tag{transform:rotate(var(--a))}
+@media (prefers-reduced-motion:no-preference){
+  .tag{animation:swing 1.4s ease-out 1}
+  @keyframes swing{0%{transform:rotate(calc(var(--a) + 22deg))}35%{transform:rotate(calc(var(--a) - 12deg))}65%{transform:rotate(calc(var(--a) + 6deg))}100%{transform:rotate(var(--a))}}
+}
+
+/* sections */
+section.block{padding:40px 0}
+.head{display:flex;justify-content:space-between;align-items:end;gap:16px;flex-wrap:wrap;margin-bottom:22px}
+.head h2{font-size:32px}
+.head p{color:var(--muted)}
+.filters{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:24px}
+select,input,textarea{font:inherit;padding:10px 14px;border-radius:var(--r-in);border:1.5px solid var(--line);background:#fff;color:var(--ink);width:100%}
+.filters select{width:auto;min-width:150px}
+label{font-size:14px;font-weight:700;display:block;margin-bottom:6px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:20px}
+.card{background:var(--paper);border-radius:var(--r-card);overflow:hidden;border:1px solid var(--line)}
+.card .pic{height:170px;display:grid;place-items:center;font-size:76px;position:relative}
+.heart{position:absolute;top:12px;right:12px;width:40px;height:40px;border-radius:50%;background:#fff;font-size:20px;display:grid;place-items:center;color:#9aa9a4}
+.heart[aria-pressed=true]{color:var(--coral)}
+.card .body{padding:16px}
+.card h3{font-size:22px}
+.meta{color:var(--muted);font-size:14px;margin:4px 0 12px}
+.row{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.fee{font-weight:700}
+.pill{display:inline-block;padding:3px 10px;border-radius:999px;font-size:12px;font-weight:700;background:var(--mint);color:var(--forest)}
+.pill.pending{background:#FFF1CC;color:#7a5600}
+.pill.ok{background:#D9F1E4;color:var(--ok)}
+.pill.no{background:#FBE0D8;color:#9b2f12}
+.empty{background:#fff;border:2px dashed var(--line);border-radius:var(--r-card);padding:34px;text-align:center;color:var(--muted)}
+
+/* panels */
+.panel{background:#fff;border:1px solid var(--line);border-radius:var(--r-card);padding:20px;margin-bottom:20px}
+.panel h3{font-size:22px;margin-bottom:14px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:20px}
+.stat{background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px}
+.stat b{font-family:'Bricolage Grotesque';font-size:34px;display:block;line-height:1}
+.stat span{color:var(--muted);font-size:14px}
+.stat.hot{background:var(--marigold);border-color:var(--marigold)}
+.stat.hot span{color:var(--ink)}
+.item{display:flex;gap:14px;align-items:center;padding:14px 0;border-top:1px solid var(--line);flex-wrap:wrap}
+.item:first-of-type{border-top:0}
+.item .ico{width:52px;height:52px;border-radius:14px;display:grid;place-items:center;font-size:28px;flex:none}
+.item .grow{flex:1;min-width:180px}
+.item .grow small{color:var(--muted);display:block}
+.acts{display:flex;gap:8px;flex-wrap:wrap}
+.steps{display:flex;gap:6px;margin-top:8px;align-items:center;flex-wrap:wrap;font-size:12px;color:var(--muted)}
+.steps i{width:10px;height:10px;border-radius:50%;background:var(--line);display:inline-block}
+.steps i.on{background:var(--forest)}
+.steps em{font-style:normal;margin-right:8px}
+.tabs{display:flex;gap:6px;margin-bottom:18px;flex-wrap:wrap}
+.tabs button{padding:9px 18px;border-radius:999px;background:#fff;border:1.5px solid var(--line);font-weight:700;color:var(--muted)}
+.tabs button[aria-selected=true]{background:var(--forest);border-color:var(--forest);color:#fff}
+
+/* modal */
+.modal{position:fixed;inset:0;background:rgba(20,49,45,.6);display:none;place-items:center;padding:16px;z-index:20;overflow:auto}
+.modal.open{display:grid}
+.sheet{background:#fff;border-radius:24px;padding:26px;max-width:520px;width:100%;max-height:92vh;overflow:auto}
+.sheet h3{font-size:26px;margin-bottom:6px}
+.sheet .sub{color:var(--muted);margin-bottom:18px}
+.field{margin-bottom:14px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.cert{border:3px double var(--forest);border-radius:14px;padding:30px 24px;text-align:center;background:linear-gradient(#fff,#f7fbf9)}
+.cert h3{font-size:30px;color:var(--forest)}
+.cert .big{font-family:'Bricolage Grotesque';font-size:30px;font-weight:800;margin:10px 0}
+.cert .face{font-size:64px}
+.cert small{color:var(--muted)}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:12px 20px;border-radius:999px;opacity:0;pointer-events:none;transition:.25s;z-index:30;font-weight:500}
+.toast.show{opacity:1;transform:translateX(-50%)}
+footer{padding:34px 0;color:var(--muted);font-size:14px;text-align:center}
+@media(max-width:760px){
+  .hero .wrap{grid-template-columns:1fr}
+  .tags{height:300px;transform:scale(.85);transform-origin:left top}
+  header.top .wrap{height:auto;padding-top:10px;padding-bottom:10px;flex-wrap:wrap}
+  nav{margin-left:0;width:100%}
+  .two{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<div class="preview"><div class="wrap">
+  <span>Design preview. Switch the screen you want to see:</span>
+  <div class="seg" role="group" aria-label="Preview as">
+    <button data-role="visitor" aria-pressed="true">Visitor</button>
+    <button data-role="user" aria-pressed="false">Adopter (user)</button>
+    <button data-role="admin" aria-pressed="false">Admin</button>
+  </div>
+</div></div>
+
+<header class="top"><div class="wrap">
+  <div class="logo"><i>🐾</i>Pawhome</div>
+  <nav id="nav" aria-label="Main"></nav>
+</div></header>
+
+<main id="app"></main>
+<footer>Pawhome · Adoptions in India and 14 other countries · Contact · Adoption policy · Privacy</footer>
+
+<div class="modal" id="modal" role="dialog" aria-modal="true"><div class="sheet" id="sheet"></div></div>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+const tints = {dog:'#FBE3C3',cat:'#DCE7FA',rabbit:'#F6DCE8',bird:'#D8F0D9'};
+const icon = {dog:'🐕',cat:'🐈',rabbit:'🐇',bird:'🦜'};
+const defaultPets = [
+ {id:1,name:'Bruno',type:'dog',breed:'Indie',age:'2 yrs',city:'Mumbai',country:'India',fee:'₹1,500',status:'Available'},
+ {id:2,name:'Mishti',type:'cat',breed:'Bengal mix',age:'1 yr',city:'Pune',country:'India',fee:'₹1,000',status:'Adopted'},
+ {id:3,name:'Luna',type:'dog',breed:'Labrador mix',age:'3 yrs',city:'Toronto',country:'Canada',fee:'$120',status:'Available'},
+ {id:4,name:'Coco',type:'rabbit',breed:'Dutch',age:'8 months',city:'Berlin',country:'Germany',fee:'€60',status:'Available'},
+ {id:5,name:'Kiwi',type:'bird',breed:'Rose-ringed parakeet',age:'4 yrs',city:'Delhi',country:'India',fee:'₹800',status:'Available'},
+ {id:6,name:'Oscar',type:'cat',breed:'British shorthair',age:'5 yrs',city:'London',country:'UK',fee:'£90',status:'Available'}
+];
+const defaultApps = [
+ {id:1,petId:1,who:'Aarav Mehta',place:'Mumbai, India',mine:false,status:'Pending',date:'3 Oct'},
+ {id:2,petId:3,who:'Sofia Rossi',place:'Toronto, Canada',mine:false,status:'Pending',date:'4 Oct'},
+ {id:3,petId:2,who:'Riya Sharma',place:'Pune, India',mine:true,status:'Accepted',date:'12 Aug',cert:'PH-2026-0031',report:'Due'}
+];
+
+let pets = JSON.parse(JSON.stringify(defaultPets));
+let wish = new Set([3]);
+let apps = JSON.parse(JSON.stringify(defaultApps));
+let role='visitor', view='browse', adminTab='apps';
+let filt={country:'all',type:'all'};
+let currentUser={name:'Riya Sharma',city:'Pune',country:'India'};
+
+function loadData(){
+  try{
+    const sp=localStorage.getItem('pawhome_pets');
+    if(sp) pets=JSON.parse(sp);
+    const sa=localStorage.getItem('pawhome_apps');
+    if(sa) apps=JSON.parse(sa);
+    const sw=localStorage.getItem('pawhome_wish');
+    if(sw) wish=new Set(JSON.parse(sw));
+    const sc=localStorage.getItem('pawhome_user');
+    if(sc) currentUser=JSON.parse(sc);
+    const sr=localStorage.getItem('pawhome_role');
+    if(sr && (sr==='visitor'||sr==='user'||sr==='admin')){
+      role=sr;
+      view=role==='admin'?'admin':'browse';
+    }
+  }catch(e){}
+}
+function saveData(){
+  try{
+    localStorage.setItem('pawhome_pets', JSON.stringify(pets));
+    localStorage.setItem('pawhome_apps', JSON.stringify(apps));
+    localStorage.setItem('pawhome_wish', JSON.stringify(Array.from(wish)));
+    localStorage.setItem('pawhome_user', JSON.stringify(currentUser));
+    localStorage.setItem('pawhome_role', role);
+  }catch(e){}
+}
+loadData();
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const pet=id=>pets.find(p=>p.id===id);
+
+function toast(t){const e=$('#toast');e.textContent=t;e.classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.remove('show'),2400)}
+function openModal(html){$('#sheet').innerHTML=html;$('#modal').classList.add('open')}
+function closeModal(){$('#modal').classList.remove('open')}
+$('#modal').addEventListener('click',e=>{if(e.target.id==='modal')closeModal()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
+
+document.querySelectorAll('[data-role]').forEach(b=>b.onclick=()=>{
+  role=b.dataset.role; view = role==='admin'?'admin':'browse';
+  document.querySelectorAll('[data-role]').forEach(x=>x.setAttribute('aria-pressed',x===b));
+  render();window.scrollTo(0,0);
+});
+
+function openAuthModal(tab='signup'){
+  function renderTab(currentTab){
+    $('#sheet').innerHTML = `
+      <div style="display:flex;gap:8px;margin-bottom:20px;justify-content:center">
+        <button id="tab-login" class="btn sm ${currentTab==='login'?'good':'ghost'}" style="${currentTab==='login'?'background:var(--forest);color:#fff;border-color:var(--forest)':''}">Log in</button>
+        <button id="tab-signup" class="btn sm ${currentTab==='signup'?'good':'ghost'}" style="${currentTab==='signup'?'background:var(--forest);color:#fff;border-color:var(--forest)':''}">Sign up</button>
+      </div>
+      ${currentTab==='signup'?`
+        <h3>Create your account</h3>
+        <p class="sub">Join Pawhome to apply for adoptions, save wishlists, and track updates.</p>
+        <div class="field"><label for="su_name">Full name *</label><input id="su_name" placeholder="Riya Sharma" value="${currentUser.name||''}"></div>
+        <div class="field"><label for="su_email">Email address *</label><input id="su_email" type="email" placeholder="riya@example.com" value="riya@example.com"></div>
+        <div class="field"><label for="su_pass">Password *</label><input id="su_pass" type="password" value="••••••••"></div>
+        <div class="two">
+          <div class="field"><label for="su_city">City</label><input id="su_city" value="${currentUser.city||'Pune'}"></div>
+          <div class="field"><label for="su_country">Country</label><input id="su_country" value="${currentUser.country||'India'}"></div>
+        </div>
+        <div class="row" style="margin-top:20px">
+          <button class="btn ghost" onclick="closeModal()">Cancel</button>
+          <button class="btn" id="do_signup">Sign up</button>
+        </div>
+      `:`
+        <h3>Welcome back</h3>
+        <p class="sub">Log in to view your applications, wishlist, and adoption certificates.</p>
+        <div class="field"><label for="li_email">Email address</label><input id="li_email" type="email" placeholder="riya@example.com" value="riya@example.com"></div>
+        <div class="field"><label for="li_pass">Password</label><input id="li_pass" type="password" value="••••••••"></div>
+        <div class="row" style="margin-top:20px">
+          <button class="btn ghost" onclick="closeModal()">Cancel</button>
+          <button class="btn" id="do_login">Log in</button>
+        </div>
+      `}
+    `;
+    $('#tab-login').onclick=()=>renderTab('login');
+    $('#tab-signup').onclick=()=>renderTab('signup');
+
+    if($('#do_signup')){
+      $('#do_signup').onclick=()=>{
+        const n = $('#su_name').value.trim() || 'Riya Sharma';
+        currentUser.name = n;
+        currentUser.city = $('#su_city').value.trim() || 'Pune';
+        currentUser.country = $('#su_country').value.trim() || 'India';
+        role = 'user';
+        view = 'account';
+        document.querySelectorAll('[data-role]').forEach(x=>x.setAttribute('aria-pressed', x.dataset.role==='user'));
+        closeModal();
+        toast('Welcome, ' + n.split(' ')[0] + '! Account created successfully.');
+        render();
+      };
+    }
+
+    if($('#do_login')){
+      $('#do_login').onclick=()=>{
+        const em = ($('#li_email').value || '').toLowerCase();
+        if(em.includes('admin')){
+          role = 'admin';
+          view = 'admin';
+          document.querySelectorAll('[data-role]').forEach(x=>x.setAttribute('aria-pressed', x.dataset.role==='admin'));
+          closeModal();
+          toast('Logged in as Administrator');
+        } else {
+          role = 'user';
+          view = 'account';
+          document.querySelectorAll('[data-role]').forEach(x=>x.setAttribute('aria-pressed', x.dataset.role==='user'));
+          closeModal();
+          toast('Logged in successfully');
+        }
+        render();
+      };
+    }
+  }
+
+  renderTab(tab);
+  $('#modal').classList.add('open');
+}
+
+function renderNav(){
+  let h='';
+  if(role==='admin'){
+    h='<button aria-current="page">Admin dashboard</button><button class="btn sm ghost" id="lo">Log out</button>';
+  }
+  else if(role==='user'){
+    h=`<button data-v="browse" ${view==='browse'?'aria-current="page"':''}>Find a pet</button>`;
+    h+=`<button data-v="account" ${view==='account'?'aria-current="page"':''}>My account</button><button class="btn sm ghost" id="lo">Log out</button>`;
+  }
+  else{
+    h=`<button data-v="browse" ${view==='browse'?'aria-current="page"':''}>Find a pet</button>`;
+    h+='<button id="li" class="btn sm ghost">Log in</button><button id="su" class="btn sm">Sign up</button>';
+  }
+  $('#nav').innerHTML=h;
+  $('#nav').querySelectorAll('[data-v]').forEach(b=>b.onclick=()=>{view=b.dataset.v;render()});
+  if($('#li'))$('#li').onclick=()=>openAuthModal('login');
+  if($('#su'))$('#su').onclick=()=>openAuthModal('signup');
+  if($('#lo'))$('#lo').onclick=()=>{
+    role='visitor';
+    view='browse';
+    document.querySelectorAll('[data-role]').forEach(x=>x.setAttribute('aria-pressed', x.dataset.role==='visitor'));
+    toast('Logged out');
+    render();
+  };
+}
+
+function petCard(p){
+  const liked=wish.has(p.id);
+  const picContent = p.photo ? `<img src="${p.photo}" alt="${p.name}" style="width:100%;height:100%;object-fit:cover;border-radius:14px 14px 0 0;">` : (icon[p.type]||'🐾');
+  return `<article class="card">
+   <div class="pic" style="background:${tints[p.type]||'#FBE3C3'};display:flex;align-items:center;justify-content:center;overflow:hidden">${picContent}
+     <button class="heart" aria-pressed="${liked}" aria-label="${liked?'Remove from':'Add to'} wishlist: ${p.name}" data-w="${p.id}">${liked?'♥':'♡'}</button>
+   </div>
+   <div class="body">
+     <div class="row"><h3>${p.name}</h3><span class="pill ${p.status==='Available'?'ok':p.status==='Reserved'?'pending':'no'}">${p.status}</span></div>
+     <p class="meta">${p.breed} · ${p.age} · ${p.city}, ${p.country}</p>
+     <div class="row"><span class="fee">${p.fee}</span>
+       ${p.status==='Available'?`<button class="btn sm" data-a="${p.id}">Adopt ${p.name}</button>`:`<span class="meta" style="margin:0">${p.status==='Reserved'?'Reserved':'Found a home'}</span>`}
+     </div>
+   </div></article>`;
+}
+
+function browse(){
+  let list=pets.filter(p=>p.status!=='Adopted' &&
+    (filt.country==='all'|| (filt.country==='in'?(p.country||'').toLowerCase()==='india':(p.country||'').toLowerCase()!=='india')) &&
+    (filt.type==='all'||(p.type||'').toLowerCase()===filt.type.toLowerCase()));
+
+  const heroPets = pets.filter(p=>p.status==='Available').slice(0, 3);
+  return `
+  <div class="hero"><div class="wrap">
+    <div>
+      <h1>Someone is waiting at the gate for you.</h1>
+      <p>Browse verified pets from rescue partners in India and abroad. Apply online, get a decision, and receive your adoption certificate.</p>
+      <div class="cta"><button class="btn alt" onclick="document.getElementById('pets').scrollIntoView({behavior:'smooth'})">Meet the pets</button><button class="btn ghost" onclick="openAuthModal('signup')">Sign up to adopt</button></div>
+    </div>
+    <div class="tags" aria-hidden="true">
+      ${heroPets.length ? heroPets.map(p=>`
+        <div class="tag"><div class="face" style="background:${tints[p.type]||'#FBE3C3'};overflow:hidden;display:flex;align-items:center;justify-content:center">${p.photo?`<img src="${p.photo}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`:(icon[p.type]||'🐾')}</div><b>${esc(p.name)}</b><span>${esc(p.city)} · ${esc(p.age)}</span></div>
+      `).join('') : `
+        <div class="tag"><div class="face" style="background:${tints.dog}">🐕</div><b>Bruno</b><span>Mumbai · 2 yrs</span></div>
+        <div class="tag"><div class="face" style="background:${tints.cat}">🐈</div><b>Oscar</b><span>London · 5 yrs</span></div>
+        <div class="tag"><div class="face" style="background:${tints.rabbit}">🐇</div><b>Coco</b><span>Berlin · 8 mo</span></div>
+      `}
+    </div>
+  </div></div>
+  <section class="block" id="pets"><div class="wrap">
+    <div class="head"><div><h2>Pets looking for a home</h2><p>${list.length} available right now</p></div></div>
+    <div class="filters">
+      <select id="fc" aria-label="Country"><option value="all">All countries</option><option value="in" ${filt.country==='in'?'selected':''}>India</option><option value="intl" ${filt.country==='intl'?'selected':''}>International</option></select>
+      <select id="ft" aria-label="Pet type"><option value="all">All pets</option>${['dog','cat','rabbit','bird'].map(t=>`<option value="${t}" ${filt.type===t?'selected':''}>${t[0].toUpperCase()+t.slice(1)}s</option>`).join('')}</select>
+    </div>
+    ${list.length?`<div class="grid">${list.map(petCard).join('')}</div>`:'<div class="empty">No pets match these filters. Try another country or pet type.</div>'}
+  </div></section>`;
+}
+
+function stepper(a){
+  const s=a.status==='Pending'?1:2, done=a.status==='Accepted';
+  const names=['Submitted','Under review',a.status==='Rejected'?'Not approved':'Approved','Certificate'];
+  return `<div class="steps">${names.map((n,i)=>`<i class="${i<=s||(done&&i<=3)?'on':''}"></i><em>${n}</em>`).join('')}</div>`;
+}
+
+function account(){
+  const mine=apps.filter(a=>a.mine);
+  const adopted=mine.filter(a=>a.status==='Accepted');
+  const wl=pets.filter(p=>wish.has(p.id));
+  return `<section class="block"><div class="wrap">
+   <div class="head"><div><h2>Hi ${currentUser.name||'Riya'}</h2><p>Your wishlist, applications and pet updates in one place.</p></div></div>
+   ${adopted.some(a=>a.report==='Due')?`<div class="panel" style="background:#FFF6DC;border-color:#f0d58a"><div class="row" style="flex-wrap:wrap"><div><h3 style="margin:0 0 4px">October update for Mishti is due</h3><p class="meta" style="margin:0">Share a photo and a few lines about how Mishti is doing. Due by 10 Oct.</p></div><button class="btn alt" data-r="1">Send update</button></div></div>`:''}
+   <div class="panel"><h3>My applications</h3>
+     ${mine.map(a=>{const p=pet(a.petId);return `<div class="item"><div class="ico" style="background:${tints[p.type]}">${icon[p.type]}</div>
+       <div class="grow"><b>${p.name}</b><small>Applied ${a.date}</small>${stepper(a)}</div>
+       <span class="pill ${a.status==='Accepted'?'ok':a.status==='Rejected'?'no':'pending'}">${a.status}</span>
+       ${a.status==='Accepted'?`<button class="btn sm" data-c="${a.id}">View certificate</button>`:''}</div>`}).join('')||'<div class="empty">You have not applied yet. Pick a pet and tap Adopt.</div>'}
+   </div>
+   <div class="panel"><h3>My wishlist</h3>
+     ${wl.length?`<div class="grid">${wl.map(petCard).join('')}</div>`:'<div class="empty">Tap the heart on any pet to save it here.</div>'}
+   </div>
+  </div></section>`;
+}
+
+function admin(){
+  const pend=apps.filter(a=>a.status==='Pending').length;
+  const adoptions=apps.filter(a=>a.status==='Accepted');
+  const dueN=adoptions.filter(a=>a.report!=='Submitted').length;
+  let body='';
+  if(adminTab==='apps'){
+    body=`<div class="panel"><h3>Adoption applications</h3>`+ apps.map(a=>{const p=pet(a.petId);return `<div class="item"><div class="ico" style="background:${tints[p.type]}">${icon[p.type]}</div>
+      <div class="grow"><b>${esc(a.who)}</b> wants <b>${p.name}</b><small>${esc(a.place)} · applied ${a.date}</small></div>
+      <span class="pill ${a.status==='Accepted'?'ok':a.status==='Rejected'?'no':'pending'}">${a.status}</span>
+      ${a.status==='Pending'?`<div class="acts"><button class="btn sm ghost" data-v2="${a.id}">View form</button><button class="btn sm good" data-ok="${a.id}">Accept</button><button class="btn sm bad" data-no="${a.id}">Reject</button></div>`:''}
+      ${a.status==='Accepted'?`<small style="color:var(--muted)">Certificate ${a.cert}</small>`:''}</div>`}).join('')+`</div>`;
+  } else if(adminTab==='pets'){
+    body=`<div class="panel"><div class="row" style="margin-bottom:10px"><h3 style="margin:0">All pets</h3><button class="btn alt sm" id="addp">+ Add pet</button></div>`+
+      pets.map(p=>`<div class="item"><div class="ico" style="background:${tints[p.type]||'#FBE3C3'};overflow:hidden;display:flex;align-items:center;justify-content:center">${p.photo?`<img src="${p.photo}" style="width:100%;height:100%;object-fit:cover;border-radius:10px">`:(icon[p.type]||'🐾')}</div>
+      <div class="grow"><b>${p.name}</b><small>${p.breed} · ${p.age} · ${p.city}, ${p.country} · ${p.fee}</small></div>
+      <span class="pill ${p.status==='Available'?'ok':p.status==='Reserved'?'pending':'no'}">${p.status}</span>
+      <div class="acts"><button class="btn sm ghost" data-edit="${p.id}">Edit</button><button class="btn sm bad" data-del="${p.id}">Remove</button></div></div>`).join('')+
+      `<div style="text-align:right;margin-top:12px"><button class="btn ghost sm" id="reset-data" style="font-size:12px;opacity:0.75">Reset sample data</button></div></div>`;
+  } else {
+    body=`<div class="panel"><h3>Monthly updates · October 2026</h3>`+(adoptions.map(a=>{const p=pet(a.petId);return `<div class="item"><div class="ico" style="background:${tints[p.type]}">${icon[p.type]}</div>
+      <div class="grow"><b>${p.name}</b> with ${esc(a.who)}<small>Adopted ${a.date}</small></div>
+      <span class="pill ${a.report==='Submitted'?'ok':'pending'}">${a.report==='Submitted'?'Update received':'Waiting for update'}</span>
+      ${a.report!=='Submitted'?`<button class="btn sm" data-rem="${a.id}">Send reminder</button>`:`<button class="btn sm ghost" data-view-rep="${a.id}">View update</button>`}</div>`}).join('')||'<div class="empty">Adopted pets will appear here for monthly tracking.</div>')+`</div>`;
+  }
+  return `<section class="block"><div class="wrap">
+   <div class="head"><div><h2>Dashboard</h2><p>Pet listings, applications and follow-ups.</p></div></div>
+   <div class="stats">
+     <div class="stat"><b>${pets.filter(p=>p.status==='Available').length}</b><span>Pets available</span></div>
+     <div class="stat hot"><b>${pend}</b><span>Applications to review</span></div>
+     <div class="stat"><b>${adoptions.length}</b><span>Pets adopted</span></div>
+     <div class="stat"><b>${dueN}</b><span>Monthly updates pending</span></div>
+   </div>
+   <div class="tabs" role="tablist">
+     ${[['apps','Applications'],['pets','Pets'],['rep','Monthly updates']].map(([k,l])=>`<button role="tab" data-t="${k}" aria-selected="${adminTab===k}">${l}</button>`).join('')}
+   </div>${body}</div></section>`;
+}
+
+function certificate(a){
+  const p=pet(a.petId);
+  openModal(`<div class="cert"><small>Certificate of adoption · ${a.cert}</small>
+   <div class="face">${icon[p.type]}</div><h3>Pawhome</h3>
+   <p>This certifies that</p><div class="big">${esc(a.who)}</div>
+   <p>has adopted <b>${p.name}</b>, ${p.breed}, ${p.age}</p><p><small>Adopted on ${a.date} 2026 · ${p.city}, ${p.country}</small></p>
+   <p style="margin-top:18px"><small>Signed by Pawhome Admin</small></p></div>
+   <div class="row" style="margin-top:16px"><button class="btn ghost" onclick="closeModal()">Close</button><button class="btn" onclick="toast('Certificate downloaded as PDF')">Download PDF</button></div>`);
+}
+
+function adoptForm(id){
+  const p=pet(id);
+  openModal(`<h3>Adopt ${p.name}</h3><p class="sub">Takes about 3 minutes. We review every application in 2 to 3 days.</p>
+   <div class="field"><label for="f1">Full name</label><input id="f1" value="${currentUser.name||'Riya Sharma'}"></div>
+   <div class="two"><div class="field"><label for="f2">City</label><input id="f2" value="${currentUser.city||'Pune'}"></div><div class="field"><label for="f3">Country</label><input id="f3" value="${currentUser.country||'India'}"></div></div>
+   <div class="two"><div class="field"><label for="f4">Home type</label><select id="f4"><option>Apartment</option><option>House with garden</option><option>Farm</option></select></div>
+   <div class="field"><label for="f5">Other pets at home</label><select id="f5"><option>None</option><option>Dog</option><option>Cat</option><option>Both</option></select></div></div>
+   <div class="field"><label for="f6">Why do you want to adopt ${p.name}?</label><textarea id="f6" rows="3"></textarea></div>
+   <div class="field"><label for="f7">ID proof</label><input id="f7" type="file"></div>
+   <div class="row"><button class="btn ghost" onclick="closeModal()">Cancel</button><button class="btn" id="sub">Send application</button></div>`);
+  $('#sub').onclick=()=>{
+    apps.unshift({id:Date.now(),petId:id,who:$('#f1').value||currentUser.name||'You',place:`${$('#f2').value}, ${$('#f3').value}`,mine:true,status:'Pending',date:'5 Oct'});saveData();
+    closeModal();toast('Application sent. We will email you the decision.');render();
+  };
+}
+
+function addPetForm(){
+  openModal(`<h3>Add a pet</h3><p class="sub">It will appear on the Find a pet page right away.</p>
+   <div class="two"><div class="field"><label for="n1">Name</label><input id="n1"></div><div class="field"><label for="n2">Type</label><select id="n2"><option value="dog">Dog</option><option value="cat">Cat</option><option value="rabbit">Rabbit</option><option value="bird">Bird</option></select></div></div>
+   <div class="two"><div class="field"><label for="n3">Breed</label><input id="n3"></div><div class="field"><label for="n4">Age</label><input id="n4" placeholder="2 yrs"></div></div>
+   <div class="two"><div class="field"><label for="n5">City</label><input id="n5"></div><div class="field"><label for="n6">Country</label><input id="n6" value="India"></div></div>
+   <div class="field"><label for="n7">Adoption fee</label><input id="n7" placeholder="₹1,000"></div>
+   <div class="field"><label for="n8">Photo or image (optional)</label><input id="n8" type="file" accept="image/*"></div>
+   <div class="row"><button class="btn ghost" onclick="closeModal()">Cancel</button><button class="btn" id="sp">Save pet</button></div>`);
+  $('#sp').onclick=()=>{
+    const n=$('#n1').value.trim(); if(!n){toast('Enter the pet’s name');return}
+    const newPet = {
+      id: Date.now(),
+      name: esc(n),
+      type: $('#n2').value,
+      breed: esc($('#n3').value.trim()||'Mixed'),
+      age: esc($('#n4').value.trim()||'—'),
+      city: esc($('#n5').value.trim()||'—'),
+      country: esc($('#n6').value.trim()||'India'),
+      fee: esc($('#n7').value.trim()||'Free'),
+      status: 'Available'
+    };
+    const fin = $('#n8');
+    if(fin && fin.files && fin.files[0]){
+      const reader = new FileReader();
+      reader.onload = e => {
+        newPet.photo = e.target.result;
+        pets.unshift(newPet);
+        saveData();
+        closeModal();toast(n+' added successfully');render();
+      };
+      reader.readAsDataURL(fin.files[0]);
+    } else {
+      pets.unshift(newPet);
+      saveData();
+      closeModal();toast(n+' added successfully');render();
+    }
+  };
+}
+
+function editPetForm(id){
+  const p=pet(id);
+  if(!p) return;
+  openModal(`<h3>Edit ${esc(p.name)}</h3><p class="sub">Update pet details, pricing, location or adoption status.</p>
+   <div class="two"><div class="field"><label for="e1">Name</label><input id="e1" value="${esc(p.name)}"></div><div class="field"><label for="e2">Type</label><select id="e2"><option value="dog" ${p.type==='dog'?'selected':''}>Dog</option><option value="cat" ${p.type==='cat'?'selected':''}>Cat</option><option value="rabbit" ${p.type==='rabbit'?'selected':''}>Rabbit</option><option value="bird" ${p.type==='bird'?'selected':''}>Bird</option></select></div></div>
+   <div class="two"><div class="field"><label for="e3">Breed</label><input id="e3" value="${esc(p.breed)}"></div><div class="field"><label for="e4">Age</label><input id="e4" value="${esc(p.age)}"></div></div>
+   <div class="two"><div class="field"><label for="e5">City</label><input id="e5" value="${esc(p.city)}"></div><div class="field"><label for="e6">Country</label><input id="e6" value="${esc(p.country)}"></div></div>
+   <div class="two"><div class="field"><label for="e7">Adoption fee</label><input id="e7" value="${esc(p.fee)}"></div><div class="field"><label for="e8">Status</label><select id="e8"><option value="Available" ${p.status==='Available'?'selected':''}>Available</option><option value="Reserved" ${p.status==='Reserved'?'selected':''}>Reserved</option><option value="Adopted" ${p.status==='Adopted'?'selected':''}>Adopted</option></select></div></div>
+   <div class="field"><label for="e9">Update photo or image (optional)</label><input id="e9" type="file" accept="image/*"></div>
+   <div class="row"><button class="btn ghost" onclick="closeModal()">Cancel</button><button class="btn" id="sep">Save changes</button></div>`);
+  $('#sep').onclick=()=>{
+    const n=$('#e1').value.trim(); if(!n){toast('Enter the pet’s name');return}
+    p.name=esc(n);
+    p.type=$('#e2').value;
+    p.breed=esc($('#e3').value.trim()||'Mixed');
+    p.age=esc($('#e4').value.trim()||'—');
+    p.city=esc($('#e5').value.trim()||'—');
+    p.country=esc($('#e6').value.trim()||'India');
+    p.fee=esc($('#e7').value.trim()||'Free');
+    p.status=$('#e8').value;
+
+    const fin = $('#e9');
+    if(fin && fin.files && fin.files[0]){
+      const reader = new FileReader();
+      reader.onload = e => {
+        p.photo = e.target.result;
+        saveData();
+        closeModal();toast(p.name+' updated successfully');render();
+      };
+      reader.readAsDataURL(fin.files[0]);
+    } else {
+      saveData();
+      closeModal();toast(p.name+' updated successfully');render();
+    }
+  };
+}
+
+function viewReportModal(id){
+  const a=apps.find(x=>x.id===id);
+  if(!a) return;
+  const p=pet(a.petId);
+  openModal(`<h3>Monthly update · ${esc(p.name)}</h3><p class="sub">Submitted by ${esc(a.who)} · ${esc(a.place)}</p>
+   <div class="panel" style="margin:0 0 16px">
+     <div style="background:${tints[p.type]||'#f4f1ea'};padding:20px;border-radius:12px;text-align:center;font-size:42px;margin-bottom:12px">${icon[p.type]||'🐾'}</div>
+     <p><b>Adopter report:</b> "${esc(p.name)} is doing wonderful! Active, happy, healthy, and eating properly. Daily evening walks and play sessions are going great."</p>
+     <p style="margin-top:10px"><small style="color:var(--muted)">Report submitted for October 2026 · Photo and health check verified</small></p>
+   </div>
+   <div class="row"><button class="btn ghost" onclick="closeModal()">Close</button><button class="btn good" onclick="toast('Pet welfare marked as OK');closeModal()">Mark welfare OK</button></div>`);
+}
+
+function viewForm(id){
+  const a=apps.find(x=>x.id===id),p=pet(a.petId);
+  openModal(`<h3>${esc(a.who)}’s application</h3><p class="sub">For ${p.name} · ${esc(a.place)}</p>
+   <div class="panel" style="margin:0 0 16px"><p><b>Home:</b> Apartment, 2 bedrooms</p><p><b>Other pets:</b> None</p><p><b>Reason:</b> We have wanted a dog for years and work from home.</p><p><b>ID proof:</b> Uploaded</p></div>
+   <div class="row"><button class="btn bad" data-no2="${id}">Reject</button><button class="btn good" data-ok2="${id}">Accept</button></div>`);
+}
+
+function decide(id,ok){
+  const a=apps.find(x=>x.id===id);
+  if(ok){a.status='Accepted';a.cert='PH-2026-00'+(32+apps.indexOf(a));a.report='Due';pet(a.petId).status='Adopted';saveData();toast('Accepted. Certificate sent to '+a.who.split(' ')[0]);}
+  else{a.status='Rejected';saveData();toast('Rejected. Applicant will get an email.');}
+  closeModal();render();
+}
+
+function render(){
+  renderNav();
+  $('#app').innerHTML = role==='admin'?admin(): view==='account'&&role==='user'?account():browse();
+  const a=$('#app');
+  a.querySelectorAll('[data-w]').forEach(b=>b.onclick=()=>{
+    if(role==='visitor'){
+      openAuthModal('signup');
+      return;
+    }
+    const id=+b.dataset.w; wish.has(id)?wish.delete(id):wish.add(id); saveData(); render();
+  });
+  a.querySelectorAll('[data-a]').forEach(b=>b.onclick=()=>{
+    if(role==='visitor'){
+      openAuthModal('signup');
+      return;
+    }
+    if(role==='admin')return; adoptForm(+b.dataset.a);
+  });
+  a.querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>certificate(apps.find(x=>x.id===+b.dataset.c)));
+  a.querySelectorAll('[data-t]').forEach(b=>b.onclick=()=>{adminTab=b.dataset.t;render()});
+  a.querySelectorAll('[data-ok]').forEach(b=>b.onclick=()=>decide(+b.dataset.ok,true));
+  a.querySelectorAll('[data-no]').forEach(b=>b.onclick=()=>decide(+b.dataset.no,false));
+  a.querySelectorAll('[data-v2]').forEach(b=>b.onclick=()=>{viewForm(+b.dataset.v2);
+    $('#sheet').querySelector('[data-ok2]').onclick=()=>decide(+b.dataset.v2,true);
+    $('#sheet').querySelector('[data-no2]').onclick=()=>decide(+b.dataset.v2,false);});
+  a.querySelectorAll('[data-edit]').forEach(b=>b.onclick=()=>editPetForm(+b.dataset.edit));
+  a.querySelectorAll('[data-view-rep]').forEach(b=>b.onclick=()=>viewReportModal(+b.dataset.viewRep));
+  a.querySelectorAll('[data-del]').forEach(b=>{
+    b.onclick=()=>{
+      const id=+b.dataset.del;
+      const targetPet=pet(id);
+      if(!targetPet) return;
+      openModal(`<h3>Remove ${esc(targetPet.name)}?</h3>
+        <p class="sub">Are you sure you want to remove ${esc(targetPet.name)} from pet listings? This action cannot be undone.</p>
+        <div class="row" style="margin-top:20px">
+          <button class="btn ghost" onclick="closeModal()">Cancel</button>
+          <button class="btn bad" id="confirm-del-pet">Yes, remove</button>
+        </div>`);
+      $('#confirm-del-pet').onclick=()=>{
+        pets=pets.filter(p=>p.id!==id);
+        closeModal();
+        toast(targetPet.name+' removed');
+        render();
+      };
+    };
+  });
+  a.querySelectorAll('[data-rem]').forEach(b=>b.onclick=()=>toast('Reminder sent to adopter'));
+  a.querySelectorAll('[data-r]').forEach(b=>b.onclick=()=>{
+    openModal(`<h3>October update for Mishti</h3><p class="sub">Admin will see this in Monthly updates.</p>
+     <div class="field"><label for="u1">Photo</label><input id="u1" type="file"></div>
+     <div class="field"><label for="u2">How is Mishti doing?</label><textarea id="u2" rows="4"></textarea></div>
+     <div class="row"><button class="btn ghost" onclick="closeModal()">Cancel</button><button class="btn" id="us">Send update</button></div>`);
+    $('#us').onclick=()=>{apps.find(x=>x.mine&&x.status==='Accepted').report='Submitted';closeModal();toast('Update sent. Thank you!');render()};
+  });
+  if($('#addp'))$('#addp').onclick=addPetForm;
+  if($('#fc'))$('#fc').onchange=e=>{filt.country=e.target.value;render();document.getElementById('pets').scrollIntoView()};
+  if($('#ft'))$('#ft').onchange=e=>{filt.type=e.target.value;render();document.getElementById('pets').scrollIntoView()};
+  document.querySelectorAll('[data-role]').forEach(x => {
+    x.setAttribute('aria-pressed', x.dataset.role === role);
+  });
+  if($('#reset-data')) $('#reset-data').onclick=()=>{
+    if(confirm('Reset all pets and applications back to default sample data?')){
+      localStorage.clear();
+      pets = JSON.parse(JSON.stringify(defaultPets));
+      apps = JSON.parse(JSON.stringify(defaultApps));
+      wish = new Set([3]);
+      saveData();
+      toast('Data reset to defaults');
+      render();
+    }
+  };
+}
+render();
+</script>
+</body>
+</html>

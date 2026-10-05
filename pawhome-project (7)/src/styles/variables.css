@@ -1,0 +1,35 @@
+:root {
+  --ink: #14312d;
+  --forest: #0f4c45;
+  --forest-dark: #0b3a35;
+  --forest-light: #185e56;
+  --mint: #eef5f1;
+  --mint-light: #f7fbf9;
+  --paper: #ffffff;
+  --marigold: #f2a900;
+  --marigold-hover: #d89600;
+  --marigold-soft: #fff9ea;
+  --coral: #e4572e;
+  --coral-soft: #fdf2ef;
+  --line: #d3e1da;
+  --line-light: #e4eee9;
+  --muted: #566c66;
+  --muted-light: #7c928c;
+  --ok: #1e7b4f;
+  --ok-soft: #d9f1e4;
+  --r-card: 22px;
+  --r-in: 12px;
+
+  /* Shadows */
+  --shadow-sm: 0 2px 6px rgba(15, 76, 69, 0.05);
+  --shadow-md: 0 6px 20px rgba(15, 76, 69, 0.08), 0 2px 4px rgba(0, 0, 0, 0.03);
+  --shadow-lg: 0 16px 36px rgba(15, 76, 69, 0.13), 0 4px 10px rgba(0, 0, 0, 0.04);
+  --shadow-tag: 0 18px 36px rgba(0, 0, 0, 0.28), 0 4px 10px rgba(0, 0, 0, 0.15);
+
+  /* Pet category background tints */
+  --tint-dog: #fbe3c3;
+  --tint-cat: #dce7fa;
+  --tint-rabbit: #f6dce8;
+  --tint-bird: #d8f0d9;
+  --tint-other: #e6ebed;
+}

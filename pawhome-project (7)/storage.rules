@@ -1,0 +1,70 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() && (
+        request.auth.token.role == 'admin' ||
+        firestore.get(/databases/(default)/documents/users/$(request.auth.uid)).data.role == 'admin'
+      );
+    }
+
+    function isImage() {
+      return request.resource.contentType.matches('image/.*');
+    }
+
+    function isPdfOrImage() {
+      return request.resource.contentType.matches('image/.*') ||
+             request.resource.contentType == 'application/pdf';
+    }
+
+    function maxFileSize(maxMegaBytes) {
+      return request.resource.size < maxMegaBytes * 1024 * 1024;
+    }
+
+    // Public pet photos and medical paperwork
+    match /pets/{petId}/photos/{photoId} {
+      allow read: if true;
+      allow write: if isAdmin() && isImage() && maxFileSize(5);
+    }
+
+    match /pets/{petId}/docs/{docId} {
+      allow read: if true;
+      allow write: if isAdmin() && isPdfOrImage() && maxFileSize(10);
+    }
+
+    // Confidential ID proofs for applications
+    match /applications/{appId}/idProofs/{fileId} {
+      allow read: if isAuthenticated() && (
+        isAdmin() ||
+        firestore.get(/databases/(default)/documents/applications/$(appId)).data.userId == request.auth.uid
+      );
+      allow write: if isAuthenticated() && isPdfOrImage() && maxFileSize(10);
+    }
+
+    // Confidential Landlord Permission proofs
+    match /applications/{appId}/landlordPerms/{fileId} {
+      allow read: if isAuthenticated() && (
+        isAdmin() ||
+        firestore.get(/databases/(default)/documents/applications/$(appId)).data.userId == request.auth.uid
+      );
+      allow write: if isAuthenticated() && isPdfOrImage() && maxFileSize(10);
+    }
+
+    // Official Adoption Certificates
+    match /certificates/{certId} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin() && request.resource.contentType == 'application/pdf' && maxFileSize(10);
+    }
+
+    // Monthly Welfare Report photos
+    match /reports/{reportId}/{photoId} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated() && isImage() && maxFileSize(5);
+    }
+  }
+}

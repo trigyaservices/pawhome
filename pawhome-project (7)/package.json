@@ -1,0 +1,28 @@
+{
+  "name": "pawhome",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "emulators": "firebase emulators:start --only auth,firestore,storage,functions,hosting",
+    "make-admin": "node scripts/make-admin.js",
+    "seed": "node scripts/seed.js",
+    "test": "node --test tests/functions.test.js tests/rules.test.js tests/validation.test.js tests/errorHandler.test.js"
+  },
+  "dependencies": {
+    "firebase": "^10.9.0",
+    "firebase-admin": "^12.0.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.22.3"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.66",
+    "@types/react-dom": "^18.2.22",
+    "@vitejs/plugin-react": "^4.2.1",
+    "vite": "^5.1.6"
+  }
+}
